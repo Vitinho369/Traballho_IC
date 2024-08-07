@@ -1,0 +1,4 @@
+Erro Quadratico Medio (MSE): 139.28
+Raiz do Erro Quadratico Medio (RMSE): 11.80
+Erro Absoluto Medio (MAE): 7.40
+R^2 Score: 0.90
