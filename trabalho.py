@@ -18,12 +18,6 @@ from sklearn.model_selection import StratifiedKFold, KFold
 from consts import MLP_CONFIGURER, DESCION_TREE_CONFIGURER, KNEIGHBORS_CONFIGURER, LINEAR_REGRESSION_CONFIGURER, CSV_FILE
 import os
 
-# Função para converter de one-hot encoding para valores nominais
-def convert_one_hot_to_nominal(df, prefix):
-    cols = [col for col in df.columns if col.startswith(prefix)]
-    df[prefix] = df[cols].idxmax(axis=1).str.replace(prefix + "_", "")
-    df.drop(cols, axis=1, inplace=True)
-
 # Carregar a base de dados Titanic
 df = pd.read_csv(CSV_FILE)
 
@@ -61,7 +55,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, targets, test_size
 # Achatar os vetores coluna em arrays unidimensionais
 y_train = y_train.values.ravel()
 y_test = y_test.values.ravel()
-targets = targets.values.ravel()
+# targets = targets.values.ravel()
 
 # Definindo modelos
 def evaluate_model(model_name, pipeline, random_state):
@@ -99,7 +93,7 @@ def graphicDispersion(model_name,pipeline, X_train, y_train,X_test, y_test):
 index = 0
 for config in LINEAR_REGRESSION_CONFIGURER:
     # Definir o pipeline para Regressão Linear
-     for i in range(1,10):
+     for i in range(1,11):
         linear_pipeline = Pipeline(steps=[
             ('preprocessor', preprocessor),
             ('regressor', LinearRegression(**config))
@@ -114,7 +108,7 @@ for config in LINEAR_REGRESSION_CONFIGURER:
 index = 0
 for config in KNEIGHBORS_CONFIGURER:
     # K-Nearest Neighbors Regressor
-     for i in range(1,10):
+     for i in range(1,11):
         knn_pipeline = Pipeline(steps=[
             ('preprocessor', preprocessor),
             ('regressor', KNeighborsRegressor(**config))  # Número de vizinhos
@@ -130,7 +124,7 @@ index = 0
 for config in DESCION_TREE_CONFIGURER:
     # Árvore de Decisão Regressora
     
-    for i in range(1,10):
+    for i in range(1,11):
         config['random_state'] = i
         tree_pipeline = Pipeline(steps=[
             ('preprocessor', preprocessor),
@@ -146,7 +140,7 @@ index = 0
 for config in MLP_CONFIGURER:
     # MLP Regressor
     
-    for i in range(1,10):
+    for i in range(1,11):
         config['random_state'] = i
         mlp_pipeline = Pipeline(steps=[
             ('preprocessor', preprocessor),
