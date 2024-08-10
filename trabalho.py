@@ -13,7 +13,9 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from consts import MPL_CONFIGURER, DESCION_TREE_CONFIGURER, KNEIGHBORS_CONFIGURER, LINEAR_REGRESSION_CONFIGURER, CSV_FILE
+from sklearn.model_selection import cross_val_score, train_test_split
+from sklearn.model_selection import StratifiedKFold, KFold
+from consts import MLP_CONFIGURER, DESCION_TREE_CONFIGURER, KNEIGHBORS_CONFIGURER, LINEAR_REGRESSION_CONFIGURER, CSV_FILE
 import os
 
 # Função para converter de one-hot encoding para valores nominais
@@ -59,33 +61,30 @@ X_train, X_test, y_train, y_test = train_test_split(features, targets, test_size
 # Achatar os vetores coluna em arrays unidimensionais
 y_train = y_train.values.ravel()
 y_test = y_test.values.ravel()
+targets = targets.values.ravel()
 
 # Definindo modelos
-def evaluate_model(model_name, pipeline, X_train, y_train, X_test, y_test):
-    pipeline.fit(X_train, y_train)
-    y_pred = pipeline.predict(X_test)
-    mse = mean_squared_error(y_test, y_pred)
-    # Calcular métricas
-    mse = mean_squared_error(y_test, y_pred)
-    rmse = mse ** 0.5
-    mae = mean_absolute_error(y_test, y_pred)
-    r2 = r2_score(y_test, y_pred)
-
-    path_name = f'./resultados/{model_name[:-1]}'
+def evaluate_model(model_name, pipeline, random_state):
+    cv = KFold(n_splits=10, random_state=random_state, shuffle=True)
+    scores = cross_val_score(pipeline, features, targets, cv=cv, scoring='r2')
+    
+    path_name = f'./resultadosMetricas/{model_name[:-1]}'
     os.makedirs(path_name, exist_ok=True)
     
-    # Salvar métricas em um arquivo de texto
-    with open(f'{path_name}/{model_name}_metrics.txt', 'w') as file:
-        file.write(f"Erro Quadratico Medio (MSE): {mse:.2f}\n")
-        file.write(f"Raiz do Erro Quadratico Medio (RMSE): {rmse:.2f}\n")
-        file.write(f"Erro Absoluto Medio (MAE): {mae:.2f}\n")
-        file.write(f"R^2 Score: {r2:.2f}\n")
-    
-    print(f"{model_name} - Erro Quadrático Médio (MSE): {mse:.2f}")
-    print(f"{model_name} - Raiz do Erro Quadrático Médio (RMSE): {rmse:.2f}")
-    print(f"{model_name} - Erro Absoluto Médio (MAE): {mae:.2f}")
-    print(f"{model_name} - R² Score: {r2:.2f}")
+    with open(f'{path_name}/{model_name[:-1]}_metrics.txt', 'a') as file:
+        file.write(f"{model_name}\n")
+        file.write(f"{model_name} r2 Mean: {scores.mean()}\n")
+        file.write(f"{model_name} r2 Std: {scores.std()}\n")
+        file.write(f"{model_name} r2 Scores: {scores}\n\n")
 
+        print(f"{model_name} r2 Scores: {scores}")
+        print(f"{model_name} r2 Mean: {scores.mean()}")
+        print(f"{model_name} r2 Std: {scores.std()}")
+
+def graphicDispersion(model_name,pipeline, X_train, y_train,X_test, y_test):
+    pipeline.fit(X_train, y_train)
+    y_pred = pipeline.predict(X_test)
+   
     # Criar e exibir o gráfico de dispersão
     plt.figure(figsize=(10, 6))
     plt.scatter(y_test, y_pred, alpha=0.5)
@@ -94,55 +93,67 @@ def evaluate_model(model_name, pipeline, X_train, y_train, X_test, y_test):
     plt.title(f'{model_name[:-2]}: Valores Reais vs. Preditos')
     plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], 'r--', lw=2)  # Linha de referência
     plt.grid(True)
-    plt.savefig(f'./{path_name}/{model_name}.png')
+    plt.savefig(f'./resultadosMetricas/{model_name[:-1]}/{model_name[:-1]}.png')
     plt.close()
 
 index = 0
 for config in LINEAR_REGRESSION_CONFIGURER:
     # Definir o pipeline para Regressão Linear
-    linear_pipeline = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('regressor', LinearRegression(**config))
-    ])
+     for i in range(1,10):
+        linear_pipeline = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', LinearRegression(**config))
+        ])
 
-    print("Linear Regression")
-    model_name = f"LinearRegression_{index}"
-    evaluate_model(model_name, linear_pipeline, X_train, y_train, X_test, y_test)
-    index += 1
+        print("Linear Regression")
+        model_name = f"LinearRegression_{index}"
+        evaluate_model(model_name, linear_pipeline, i)
+        graphicDispersion(model_name, linear_pipeline, X_train, y_train, X_test, y_test)
+        index += 1
 
 index = 0
 for config in KNEIGHBORS_CONFIGURER:
     # K-Nearest Neighbors Regressor
-    knn_pipeline = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('regressor', KNeighborsRegressor(**config))  # Número de vizinhos
-    ])
+     for i in range(1,10):
+        knn_pipeline = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', KNeighborsRegressor(**config))  # Número de vizinhos
+        ])
 
-    print("K-Nearest Neighbors")
-    model_name = f"KNeighborsRegressor_{index}"
-    evaluate_model(model_name, knn_pipeline, X_train, y_train, X_test, y_test)
-    index += 1
+        print("K-Nearest Neighbors")
+        model_name = f"KNeighborsRegressor_{index}"
+        evaluate_model(model_name, knn_pipeline, i)
+        graphicDispersion(model_name, knn_pipeline, X_train, y_train, X_test, y_test)
+        index += 1
 
 index = 0
 for config in DESCION_TREE_CONFIGURER:
     # Árvore de Decisão Regressora
-    tree_pipeline = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('regressor', DecisionTreeRegressor(**config))
-    ])
-    print("Decision Tree") 
-    model_name = f"DecisionTree_{index}"
-    evaluate_model(model_name, tree_pipeline, X_train, y_train, X_test, y_test)
-    index += 1
+    
+    for i in range(1,10):
+        config['random_state'] = i
+        tree_pipeline = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', DecisionTreeRegressor(**config))
+        ])
+        print("Decision Tree") 
+        model_name = f"DecisionTree_{index}"
+        evaluate_model(model_name, tree_pipeline, i)
+        graphicDispersion(model_name, tree_pipeline, X_train, y_train, X_test, y_test)
+        index += 1
 
 index = 0
-for config in MPL_CONFIGURER:
+for config in MLP_CONFIGURER:
     # MLP Regressor
-    mlp_pipeline = Pipeline(steps=[
-        ('preprocessor', preprocessor),
-        ('regressor', MLPRegressor(**config))
-    ])
-    print("MLP Regression")
-    model_name = f"MLPRegressor_{index}"
-    evaluate_model(model_name, mlp_pipeline, X_train, y_train, X_test, y_test)
-    index += 1
+    
+    for i in range(1,10):
+        config['random_state'] = i
+        mlp_pipeline = Pipeline(steps=[
+            ('preprocessor', preprocessor),
+            ('regressor', MLPRegressor(**config))
+        ])
+        print("MLP Regression")
+        model_name = f"MLPRegressor_{index}"
+        evaluate_model(model_name, mlp_pipeline, i)
+        graphicDispersion(model_name, mlp_pipeline, X_train, y_train, X_test, y_test)
+        index += 1

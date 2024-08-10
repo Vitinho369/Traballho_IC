@@ -2,46 +2,26 @@
 CSV_FILE = './IoTProcessed_Data.csv'
 
 #Configurações de modelos
-MPL_CONFIGURER = [
+MLP_CONFIGURER = [
         {
-            'hidden_layer_sizes': 7,
-            'activation': 'logistic',
             'max_iter': 500,
-            'random_state': 1,
-            'alpha': 0.01,
-            'momentum': 0.9
+            'learning_rate_init': 0.01
         },
         {
-            'hidden_layer_sizes': 7,
-            'activation': 'relu',
-            'max_iter': 500,
-            'random_state': 1,
-            'alpha': 0.01,
-            'momentum': 0.9
+            'max_iter': 250,
+            'learning_rate_init': 0.06
+        },
+         {
+            'max_iter': 600,
+            'learning_rate_init': 0.25
         },
         {
-            'hidden_layer_sizes': 7,
-            'activation': 'tanh',
-            'max_iter': 500,
-            'random_state': 1,
-            'alpha': 0.01,
-            'momentum': 0.9
-        },
-        {
-            'hidden_layer_sizes': 10,
-            'activation': 'logistic',
             'max_iter': 700,
-            'random_state': 1,
-            'alpha': 0.02,
-            'momentum': 0.5
+            'learning_rate_init': 0.5
         },
         {
-            'hidden_layer_sizes': 7,
-            'activation': 'relu',
-            'max_iter': 1000,
-            'random_state': 1,
-            'alpha': 0.01,
-            'momentum': 0.9
+            'max_iter': 400,
+            'learning_rate_init': 0.1
         }
 ]
 
