@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import friedmanchisquare
 
-# Resultados do R2 para cada modelo KNeighborsRegressor
 results = np.array([
     [0.94778552, 0.94243569, 0.95052619, 0.95077518, 0.94205803, 0.94278916, 0.94659844, 0.94823546, 0.9493395,  0.94719874],
     [0.93979141, 0.9507048,  0.94399944, 0.95057704, 0.95098538, 0.94641071, 0.94681235, 0.94426811, 0.93672205, 0.95383801],

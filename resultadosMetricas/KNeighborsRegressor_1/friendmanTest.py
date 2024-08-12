@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import friedmanchisquare
 
-# Resultados do R2 para cada configuração do KNeighborsRegressor
 results = np.array([
     [0.94201328, 0.95418097, 0.95428658, 0.95457952, 0.95761916, 0.95023606,
      0.9454062,  0.94749599, 0.94095573, 0.96168994],  # KNeighborsRegressor_10
@@ -25,10 +24,8 @@ results = np.array([
      0.94437711, 0.94581927, 0.94727189, 0.95508962]   # KNeighborsRegressor_19
 ])
 
-# Realizar o teste de Friedman
 statistic, p_value = friedmanchisquare(*results)
 output_text = f"Estatística de Friedman: {statistic}\nValor-p: {p_value}"
 
-# Salvar os resultados em um arquivo de texto
 with open("KnnRegressorTest_1.txt", "w") as file:
     file.write(output_text)

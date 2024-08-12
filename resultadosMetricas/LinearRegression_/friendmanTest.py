@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import friedmanchisquare
 
-# Resultados do R² para cada configuração do LinearRegression
 results = np.array([
     [0.89745511, 0.88901818, 0.88842134, 0.8861167, 0.8881251, 
      0.89740106, 0.89558459, 0.89430781, 0.88746001, 0.88247021],  # LinearRegression_0
@@ -27,13 +26,10 @@ results = np.array([
      0.89740106, 0.89558459, 0.89430781, 0.88746001, 0.88247021]   # LinearRegression_9
 ])
 
-# Realizar o teste de Friedman
 statistic, p_value = friedmanchisquare(*results)
 
-# Gerar a saída
 output_text = f"Estatística de Friedman: {statistic}\nValor-p: {p_value}\n"
 
-# Salvar os resultados em um arquivo de texto
 with open("LinearRegressionTest_0.txt", "w") as file:
     file.write(output_text)
 

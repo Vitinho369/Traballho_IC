@@ -1,7 +1,6 @@
 import numpy as np
 from scipy.stats import friedmanchisquare
 
-# Resultados do R² para cada configuração do MLPRegressor
 results = np.array([
     [0.92308601, 0.91273614, 0.92862493, 0.89964453, 0.936642, 0.88820101,
      0.92119475, 0.91761896, 0.91904472, 0.92218079],  # MLPRegressor_10
@@ -25,13 +24,10 @@ results = np.array([
      0.886132563, -0.0000157374587, 0.909159294, 0.874528379, 0.882426613]   # MLPRegressor_19
 ])
 
-# Realizar o teste de Friedman
 statistic, p_value = friedmanchisquare(*results)
 
-# Gerar a saída
 output_text = f"Estatística de Friedman: {statistic}\nValor-p: {p_value}\n"
 
-# Salvar os resultados em um arquivo de texto
 with open("MLPRegressorTest_1.txt", "w") as file:
     file.write(output_text)
 

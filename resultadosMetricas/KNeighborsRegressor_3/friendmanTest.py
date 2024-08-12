@@ -1,7 +1,13 @@
 import numpy as np
-from scipy.stats import friedmanchisquare
+from scipy.stats import friedmanchisquare, wilcoxon
+def wilcoxon_test(data, col1, col2):
+    try:
+        stat, p_value = wilcoxon(data[col1], data[col2], zero_method='wilcox', correction=False)
+        return f'{col1} & {col2} : p-valor = {p_value}\n'
+    except Exception as e:
+        return f'Erro ao realizar o teste de Wilcoxon entre {col1} e {col2}: {e}\n'
+    
 
-# Resultados do R² para cada configuração do KNeighborsRegressor
 results = np.array([
     [0.95604178, 0.9610005,  0.96081281, 0.95403545, 0.95895166, 0.95689057,
      0.95734191, 0.95632765, 0.96470646, 0.95489019],  # KNeighborsRegressor_30
@@ -25,14 +31,23 @@ results = np.array([
      0.94813864, 0.94717962, 0.95879571, 0.94806517]   # KNeighborsRegressor_39
 ])
 
-# Realizar o teste de Friedman
 statistic, p_value = friedmanchisquare(*results)
 
-# Gerar a saída
 output_text = f"Estatística de Friedman: {statistic}\nValor-p: {p_value}\n"
 
-# Salvar os resultados em um arquivo de texto
 with open("KnnRegressorTest_3.txt", "w") as file:
     file.write(output_text)
 
 print("Resultados salvos em 'KnnRegressorTest_3.txt'")
+
+if p_value < 0.05:
+   
+    output_text = ""
+    for i in range(len(results)):
+        for j in range(i + 1, len(results)):
+            output_text += wilcoxon_test(results, i, j)
+
+    with open("./wilcoxonTest/KnnRegressorTest_3.txt", "w") as file:
+        file.write(output_text)
+
+    print("Resultados salvos em './wilcoxonTest/KnnRegressorTest_3.txt'")
