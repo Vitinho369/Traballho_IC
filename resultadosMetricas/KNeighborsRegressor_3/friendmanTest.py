@@ -47,6 +47,7 @@ if p_value < 0.05:
         for j in range(i + 1, len(results)):
             output_text += wilcoxon_test(results, i, j)
 
+    # Salvar os resultados em um arquivo de texto
     with open("./wilcoxonTest/KnnRegressorTest_3.txt", "w") as file:
         file.write(output_text)
 
